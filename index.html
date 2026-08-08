@@ -56,6 +56,17 @@
             margin-top: 30px;
             font-size: 14px;
         }
+
+        #loading {
+            margin-top: 30px;
+            color: #666;
+        }
+
+        #error {
+            display: none;
+            color: red;
+            margin-top: 30px;
+        }
     </style>
 </head>
 
@@ -75,18 +86,72 @@
             Thank you for using EA360 Video Booth.
         </p>
 
+        <div id="loading">
+            Preparing your video...
+        </div>
+
         <a
+            id="downloadButton"
             class="download"
-            href="https://tempfile.org/sgxTDVaQJwd/"
+            href="#"
+            style="display:none;"
         >
             DOWNLOAD VIDEO
         </a>
+
+        <p id="error">
+            Video is currently unavailable. Please try again.
+        </p>
 
         <p class="note">
             Tap the button above to download your video.
         </p>
 
     </div>
+
+    <script>
+
+        fetch("./latest_cloud_url.txt")
+            .then(response => {
+
+                if (!response.ok) {
+                    throw new Error("URL file not found");
+                }
+
+                return response.text();
+
+            })
+            .then(url => {
+
+                url = url.trim();
+
+                if (!url.startsWith("https://")) {
+                    throw new Error("Invalid video URL");
+                }
+
+                const button =
+                    document.getElementById("downloadButton");
+
+                button.href = url;
+                button.style.display = "inline-block";
+
+                document.getElementById("loading")
+                    .style.display = "none";
+
+            })
+            .catch(error => {
+
+                console.error(error);
+
+                document.getElementById("loading")
+                    .style.display = "none";
+
+                document.getElementById("error")
+                    .style.display = "block";
+
+            });
+
+    </script>
 
 </body>
 
